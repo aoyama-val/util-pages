@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>unix-timestamp-converter.html</title>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+  <style>
+    h1 {
+      font-size: 16px;
+    }
+    #container {
+      margin-top: 15px;
+      display: flex;
+      width: 100%;
+    }
+    #ta1 {
+      width: 50%;
+      height: 500px;
+    }
+    #ta2 {
+      margin-left: 10px;
+      width: 50%;
+      height: 500px;
+    }
+  </style>
+
+  <script>
+    let formatIso8601Jst = function(date) {
+      let clone = new Date(date);
+      clone.setHours(clone.getHours() + 9);
+      let result = clone.toISOString().substr(0, 19) + "+09:00";
+      return result;
+    };
+
+    $(function() {
+      setInterval(function() {
+        var now = new Date();
+        $("#nowInSeconds").val(Math.round(now.getTime() / 1000));
+      }, 1000);
+
+      $("#ta1").keyup(function() {
+        var input = $("#ta1").val();
+        var converted = input.split("\n").map(function(line) {
+          var ts = parseInt(line, 10);
+          if (!isNaN(ts)) {
+            if (ts < 9999999999) {
+              return line.trim() + " => " + formatIso8601Jst(new Date(ts * 1000));  // sec
+            } else {
+              return line.trim() + " => " + formatIso8601Jst(new Date(ts)); // ms
+            }
+          }
+        }).join("\n");
+        $("#ta2").val(converted);
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>Unix Epock Timestamp to Human readable time Converter</h1>
+  Now:
+  <input type="text" id="nowInSeconds"> (sec)
+
+  <div id="container">
+    <textarea id="ta1"></textarea>
+    <textarea id="ta2"></textarea>
+  </div>
+</body>
+</html>
+<!-- vim: set ts=2 sts=2 sw=2 expandtab list: -->
